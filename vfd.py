@@ -75,8 +75,8 @@ def displayClear(): # Clear VFD Unit
 def cursorHome(): # Return Cursor to upper left position
     writeVFD('16')
 
-def cursorPos(): # Make Cursor Visible
-    writeVFD('0F')
+def cursorPos(position): # Move Cursor to Position
+    writeVFD('1B'+position)
 
 ## Function to convert text to the corresponding hex values as defined in the character dictionary in the config file
 def textToHex(stringText,hexRaw=""):
@@ -95,11 +95,14 @@ for string in strArg: #if argument exists, set text to be written to the argumen
     if r != 0:
         stringText = str(rawText) + " " + str(string)
     r = r+1
-if stringText == "": #if there is no argument, do this instead
-    stringText = "INITIALIZING        DISPLAY"
-
-hexRaw = "0E15"
-for character in stringText:
-    hexRaw = hexRaw + config.charDict[character]
-writeVFD(hexRaw,config.transitionDelay/1000)
+hexPre = "0E15"
+if stringText != "": #if there is argument text, write it to display
+    hexRaw = textToHex(stringText,hexPre)
+    writeVFD(hexRaw,config.transitionDelay/1000)
+elif stringText == "": #if there is no argument, do this instead
+    hexRaw = textToHex("INITIALIZING",hexPre)
+    writeVFD(hexRaw,config.transitionDelay/1000)
+    hexRaw = textToHex("DISPLAY","160A")
+    writeVFD(hexRaw,config.transitionDelay/1000)
 time.sleep(1)
+writeVFD('14120E') #reset display (14), carriage return off (12), make cursor invisible (0E)
