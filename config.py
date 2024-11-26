@@ -1,30 +1,56 @@
-## URLs for VCR clock display
-urlPHP = 'http://<path-to-file>/json.php?tv=<client>' #URL to php file that generates JSON
-urlJSON = 'http://<path-to-file>/<client>.json' #URL of generated JSON file
+import configparser
+
+config = configparser.ConfigParser()
+config.read('config.ini')
+'''for section in config.sections():
+    print(f"[{section}]")
+    for key, value in config.items(section):
+        print(f"{key} = {value}")
+    print()  # Blank line between sections'''
+## URL and key filter for BEE now playing display
+urlJSON = f"{config['BEE'].get('URL')}/live" #URL of generated JSON file
+keyFilter = config['BEE'].get('Clients').split(',')
+
+## For Home Assistant API
+haToken = config['Home Assistant'].get('Key')
+haURL = f"{config['Home Assistant'].get('URL')}/api/states"
+haHeaders = {
+    "Authorization": haToken,
+    "content-type": "application/json"
+}
+haWeatherEntityID = config['Home Assistant'].get('Weather Entity')
+refreshRate = int(config['Home Assistant'].get('Refresh')) #seconds
+
+## Time Window to Show Weather Data (use 24h HH:MM format)
+startTime = config['Clock'].get('Weather Start')
+endTime = config['Clock'].get('Weather End')
 
 ## Display and Refresh Settings
-clockMode = "24h" #set clock to 12h or 24h mode
-transitionDelay = 5 #ms delay between letters, set higher for slower transition 
-loopDelay = 4900 #ms between data updates
-scrollDelay = 8 #ms for scroll speed (lower is faster)
-showDate = False #whether or not to show the date in the "off" state (True or False)
-charWidth = 20 #maximum single-line width of display
+clockMode = config['Clock'].get('Clock Mode') #set clock to 12h or 24h mode
+transitionDelay = int(config['VFD'].get('Transition Delay')) #ms delay between letters, set higher for slower transition 
+loopDelay = int(config['VFD'].get('Loop Delay')) #ms between data updates
+scrollDelay = int(config['VFD'].get('Scroll Delay')) #ms for scroll speed (lower is faster)
+if config['Clock'].get('Show Date').lower() == "true" or config['Clock'].get('Show Date').lower() == "yes":
+    showDate = True
+else:
+    showDate = False #whether or not to show the date in the "off" state (True or False)
+charWidth = int(config['VFD'].get('Character Width')) #maximum single-line width of display
 
 ## VFD Connector to GPIO Settings
 pinout = {
-    'J1-14':24, # Reset
-    'J1-12':6, # Ground
-    'J1-11':4, # +5V @ 370mA (TYP)
-    'J1-10':23,# D0 (LSB)
-    'J1-9':40, # D1
-    'J1-8':38, # D2
-    'J1-7':36, # D3
-    'J1-6':32, # D4
-    'J1-5':37, # D5
-    'J1-4':35, # D6
-    'J1-3':33, # D7
-    'J1-2':31,  # Write Strobe
-    'J1-1':29  # Busy
+    'J1-14':int(config['GPIO'].get('Pin14')), # Reset
+    'J1-12':int(config['GPIO'].get('Pin12')), # Ground
+    'J1-11':int(config['GPIO'].get('Pin11')), # +5V @ 370mA (TYP)
+    'J1-10':int(config['GPIO'].get('Pin10')),# D0 (LSB)
+    'J1-9':int(config['GPIO'].get('Pin9')), # D1
+    'J1-8':int(config['GPIO'].get('Pin8')), # D2
+    'J1-7':int(config['GPIO'].get('Pin7')), # D3
+    'J1-6':int(config['GPIO'].get('Pin6')), # D4
+    'J1-5':int(config['GPIO'].get('Pin5')), # D5
+    'J1-4':int(config['GPIO'].get('Pin4')), # D6
+    'J1-3':int(config['GPIO'].get('Pin3')), # D7
+    'J1-2':int(config['GPIO'].get('Pin2')),  # Write Strobe
+    'J1-1':int(config['GPIO'].get('Pin1'))  # Busy
 }
 
 ## Character Dictionary

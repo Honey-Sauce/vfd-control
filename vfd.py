@@ -2,12 +2,15 @@
 import sys
 import datetime
 import time
+import pytz
 import json
 import math
 import RPi.GPIO as GPIO
 import urllib.request
 import config
+import requests
 GPIO.setmode(GPIO.BOARD)
+GPIO.setwarnings(False)
 strArg = sys.argv
 
 ## Set pins to send data
@@ -97,12 +100,23 @@ for string in strArg: #if argument exists, set text to be written to the argumen
     r = r+1
 hexPre = "0E15"
 if stringText != "": #if there is argument text, write it to display
-    hexRaw = textToHex(stringText,hexPre)
-    writeVFD(hexRaw,config.transitionDelay/1000)
+    if strArg[1] == "--shutdown":
+        writeVFD('14120E') #reset display (14), carriage return off (12), make cursor invisible (0E)
+        line1 = "SHUTTING"
+        line2 = "DOWN"
+        hexRaw = textToHex(line1.center(20),hexPre)
+        writeVFD(hexRaw,int(config.transitionDelay)/1000)
+        hexRaw = textToHex(line2.center(20),"160A")
+        writeVFD(hexRaw,int(config.transitionDelay)/1000)
+        time.sleep(2)
+        writeVFD('14120E') #reset display (14), carriage return off (12), make cursor invisible (0E)
+    else:
+        hexRaw = textToHex(stringText,hexPre)
+        writeVFD(hexRaw,int(config.transitionDelay)/1000)
 elif stringText == "": #if there is no argument, do this instead
     hexRaw = textToHex("INITIALIZING",hexPre)
-    writeVFD(hexRaw,config.transitionDelay/1000)
+    writeVFD(hexRaw,int(config.transitionDelay)/1000)
     hexRaw = textToHex("DISPLAY","160A")
-    writeVFD(hexRaw,config.transitionDelay/1000)
+    writeVFD(hexRaw,int(config.transitionDelay)/1000)
 time.sleep(1)
-writeVFD('14120E') #reset display (14), carriage return off (12), make cursor invisible (0E)
+#writeVFD('14120E') #reset display (14), carriage return off (12), make cursor invisible (0E)

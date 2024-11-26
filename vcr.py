@@ -59,13 +59,15 @@ def vfdLoop(ha_data):
                 for filtered in config.keyFilter:
                     if filtered == elementKey:
                         status = "Playing"
-                        line1Text = f"{nowTime}" + f" CHANNEL {elementValue.get('channel')}".center(14, " ")
+                        timeDisplay = nowTime
+                        textDisplay = f" CHANNEL {elementValue.get('channel')}".center(14, " ")
+                        line1Text = timeDisplay + textDisplay
                         if elementValue.get('category') == "series":
                             if line2cycle == 0:
                                 line2Text = elementValue.get('title')
                                 line2cycle += 1
                             elif line2cycle == 1:
-                                line2Text = f"Season {elementValue['details'].get('season_number')} Episode {elementValue['details'].get('episode_number')} - {elementValue['details'].get('episode_title')}"
+                                line2Text = f"Season {elementValue['details'].get('season_number')} Episode {elementValue['details'].get('episode_number')}: {elementValue['details'].get('episode_title')}"
                                 line2cycle += 1
                             elif line2cycle == 2:
                                 line2Text = f"Rated {elementValue.get('rated')}"
@@ -257,7 +259,7 @@ def vfdLoop(ha_data):
             print(line1Text)
             hexPre = "16"
             hexRaw = textToHex(line1Text.upper(),hexPre)
-            writeVFD(hexRaw,config.transitionDelay/1000)
+            writeVFD(hexRaw,int(config.transitionDelay)/1000)
             timePassed = timePassed + (len(hexRaw)/2 * config.scrollDelay)
             sleepTime = sleepTime - (len(hexRaw)/2 * config.transitionDelay)
         else: #if line 1 matches what was written to line 1 on the last loop, skip to the next line
