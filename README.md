@@ -9,4 +9,5 @@ Interface between vacuum florescent displays with 14-pin connectors and a Raspbe
 
 ## INSTALLATION
 Download files to a raspberry pi, set configuration options in config.py and run with python3
+
 To run the VCR display script on boot, add `python3 /path/to/file/vcr.py` to your `/etc/rc.local` file
