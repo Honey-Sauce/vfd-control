@@ -1,56 +1,63 @@
 import configparser
+import os
 
-config = configparser.ConfigParser()
-config.read('config.ini')
+# Get the directory of the currently running script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Set it as the working directory
+os.chdir(script_dir)
+
+ini = configparser.ConfigParser()
+ini.read('config.ini')
 '''for section in config.sections():
     print(f"[{section}]")
     for key, value in config.items(section):
         print(f"{key} = {value}")
     print()  # Blank line between sections'''
 ## URL and key filter for BEE now playing display
-urlJSON = f"{config['BEE'].get('URL')}/live" #URL of generated JSON file
-keyFilter = config['BEE'].get('Clients').split(',')
+urlJSON = f"{ini['BEE'].get('URL')}/live" #URL of generated JSON file
+keyFilter = ini['BEE'].get('Clients').split(',')
 
 ## For Home Assistant API
-haToken = config['Home Assistant'].get('Key')
-haURL = f"{config['Home Assistant'].get('URL')}/api/states"
+haToken = ini['Home Assistant'].get('Key')
+haURL = f"{ini['Home Assistant'].get('URL')}/api/states"
 haHeaders = {
     "Authorization": haToken,
     "content-type": "application/json"
 }
-haWeatherEntityID = config['Home Assistant'].get('Weather Entity')
-refreshRate = int(config['Home Assistant'].get('Refresh')) #seconds
+haWeatherEntityID = ini['Home Assistant'].get('Weather Entity')
+refreshRate = int(ini['Home Assistant'].get('Refresh')) #seconds
 
 ## Time Window to Show Weather Data (use 24h HH:MM format)
-startTime = config['Clock'].get('Weather Start')
-endTime = config['Clock'].get('Weather End')
+startTime = ini['Clock'].get('Weather Start')
+endTime = ini['Clock'].get('Weather End')
 
 ## Display and Refresh Settings
-clockMode = config['Clock'].get('Clock Mode') #set clock to 12h or 24h mode
-transitionDelay = int(config['VFD'].get('Transition Delay')) #ms delay between letters, set higher for slower transition 
-loopDelay = int(config['VFD'].get('Loop Delay')) #ms between data updates
-scrollDelay = int(config['VFD'].get('Scroll Delay')) #ms for scroll speed (lower is faster)
-if config['Clock'].get('Show Date').lower() == "true" or config['Clock'].get('Show Date').lower() == "yes":
+clockMode = ini['Clock'].get('Clock Mode') #set clock to 12h or 24h mode
+transitionDelay = int(ini['VFD'].get('Transition Delay')) #ms delay between letters, set higher for slower transition 
+loopDelay = int(ini['VFD'].get('Loop Delay')) #ms between data updates
+scrollDelay = int(ini['VFD'].get('Scroll Delay')) #ms for scroll speed (lower is faster)
+if ini['Clock'].get('Show Date').lower() == "true" or ini['Clock'].get('Show Date').lower() == "yes":
     showDate = True
 else:
     showDate = False #whether or not to show the date in the "off" state (True or False)
-charWidth = int(config['VFD'].get('Character Width')) #maximum single-line width of display
+charWidth = int(ini['VFD'].get('Character Width')) #maximum single-line width of display
 
 ## VFD Connector to GPIO Settings
 pinout = {
-    'J1-14':int(config['GPIO'].get('Pin14')), # Reset
-    'J1-12':int(config['GPIO'].get('Pin12')), # Ground
-    'J1-11':int(config['GPIO'].get('Pin11')), # +5V @ 370mA (TYP)
-    'J1-10':int(config['GPIO'].get('Pin10')),# D0 (LSB)
-    'J1-9':int(config['GPIO'].get('Pin9')), # D1
-    'J1-8':int(config['GPIO'].get('Pin8')), # D2
-    'J1-7':int(config['GPIO'].get('Pin7')), # D3
-    'J1-6':int(config['GPIO'].get('Pin6')), # D4
-    'J1-5':int(config['GPIO'].get('Pin5')), # D5
-    'J1-4':int(config['GPIO'].get('Pin4')), # D6
-    'J1-3':int(config['GPIO'].get('Pin3')), # D7
-    'J1-2':int(config['GPIO'].get('Pin2')),  # Write Strobe
-    'J1-1':int(config['GPIO'].get('Pin1'))  # Busy
+    'J1-14':int(ini['GPIO'].get('Pin14')), # Reset
+    'J1-12':int(ini['GPIO'].get('Pin12')), # Ground
+    'J1-11':int(ini['GPIO'].get('Pin11')), # +5V @ 370mA (TYP)
+    'J1-10':int(ini['GPIO'].get('Pin10')),# D0 (LSB)
+    'J1-9':int(ini['GPIO'].get('Pin9')), # D1
+    'J1-8':int(ini['GPIO'].get('Pin8')), # D2
+    'J1-7':int(ini['GPIO'].get('Pin7')), # D3
+    'J1-6':int(ini['GPIO'].get('Pin6')), # D4
+    'J1-5':int(ini['GPIO'].get('Pin5')), # D5
+    'J1-4':int(ini['GPIO'].get('Pin4')), # D6
+    'J1-3':int(ini['GPIO'].get('Pin3')), # D7
+    'J1-2':int(ini['GPIO'].get('Pin2')),  # Write Strobe
+    'J1-1':int(ini['GPIO'].get('Pin1'))  # Busy
 }
 
 ## Character Dictionary
