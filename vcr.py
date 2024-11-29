@@ -208,9 +208,9 @@ def vfdLoop(ha_data):
                     line2Strings.append("Now: "+currentWindSpeed+" "+currentWindDir+" Wind")
                 else:
                     line2Strings.append("Now: "+currentWindSpeed+" Wind")
-                timezone = pytz.timezone(config.timezone)
+                '''timezone = pytz.timezone(config.timezone)
                 now_aware = timezone.localize(datetime.datetime.now())
-                '''forecastSplit_1 = forecastDetailed_1.split('. ')
+                forecastSplit_1 = forecastDetailed_1.split('. ')
                 forecastSplit_2 = forecastDetailed_2.split('. ')
                 if forecastDaytime_1 == False:
                     line1Strings.append("Low " + forecastTemp_1)
